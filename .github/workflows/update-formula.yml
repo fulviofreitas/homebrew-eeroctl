@@ -126,8 +126,11 @@ jobs:
 
       - name: Validate formula
         run: |
-          echo "Installing from source..."
-          brew install --build-from-source ./Formula/eeroctl.rb
+          echo "Tapping local repository..."
+          brew tap fulviofreitas/eeroctl "$(pwd)"
+
+          echo "Installing from tap..."
+          brew install --build-from-source fulviofreitas/eeroctl/eeroctl
 
           echo "Checking version..."
           eero --version
