@@ -272,13 +272,13 @@ jobs:
             exit 0
           fi
 
-          # Stage changes first (required before rebase - git cannot rebase with unstaged changes)
+          # Commit locally first (git pull --rebase requires clean working tree)
           git add Formula/eeroctl.rb
+          git commit -m "chore: update eeroctl to ${VERSION}"
 
-          # Pull latest changes to avoid conflicts (safe now that changes are staged)
+          # Rebase our commit on top of any remote changes
           git pull --rebase origin master
 
-          git commit -m "chore: update eeroctl to ${VERSION}"
           git push origin master
 
           echo "✅ Formula committed and pushed"
