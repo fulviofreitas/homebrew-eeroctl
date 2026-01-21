@@ -272,10 +272,12 @@ jobs:
             exit 0
           fi
 
-          # Pull latest changes to avoid conflicts
+          # Stage changes first (required before rebase - git cannot rebase with unstaged changes)
+          git add Formula/eeroctl.rb
+
+          # Pull latest changes to avoid conflicts (safe now that changes are staged)
           git pull --rebase origin master
 
-          git add Formula/eeroctl.rb
           git commit -m "chore: update eeroctl to ${VERSION}"
           git push origin master
 
