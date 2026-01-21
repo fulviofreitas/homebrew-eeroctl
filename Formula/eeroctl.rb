@@ -11,17 +11,28 @@ class Eeroctl < Formula
   depends_on "python@3.12"
 
   def install
-    # Create virtualenv (Homebrew uses --without-pip, but --system-site-packages
-    # gives access to the system pip)
-    venv = virtualenv_create(libexec, "python3.12")
+    # Create virtualenv only - package installation happens in post_install
+    # to bypass Homebrew's dylib ID rewriting which fails on pydantic_core
+    virtualenv_create(libexec, "python3.12")
 
-    # Use venv's python to call pip as a module
-    # This installs eeroctl AND all dependencies with binary wheels
-    # Much faster than virtualenv_install_with_resources which builds from source
-    system libexec/"bin/python", "-m", "pip", "install", "eeroctl==#{version}"
+    # Create wrapper scripts that delegate to the actual binaries
+    # These will work after post_install runs
+    (bin/"eero").write <<~EOS
+      #!/bin/bash
+      exec "#{libexec}/bin/eero" "$@"
+    EOS
+    (bin/"eeroctl").write <<~EOS
+      #!/bin/bash
+      exec "#{libexec}/bin/eeroctl" "$@"
+    EOS
+  end
 
-    bin.install_symlink libexec/"bin/eero"
-    bin.install_symlink libexec/"bin/eeroctl"
+  def post_install
+    # Install packages here, AFTER Homebrew's cleanup/linkage steps
+    # This avoids the "Failed changing dylib ID" error for pydantic_core
+    system libexec/"bin/python", "-m", "pip", "install",
+           "--quiet", "--disable-pip-version-check",
+           "eeroctl==#{version}"
   end
 
   test do
