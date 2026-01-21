@@ -19,6 +19,11 @@ on:
 permissions:
   contents: write
 
+# Prevent concurrent runs from conflicting
+concurrency:
+  group: formula-update
+  cancel-in-progress: false
+
 jobs:
   # ===========================================================================
   # Job 1: Generate formula on fast Ubuntu runner
@@ -30,16 +35,17 @@ jobs:
 
     outputs:
       version: ${{ steps.meta.outputs.version }}
+      sha256: ${{ steps.meta.outputs.sha256 }}
+      source_url: ${{ steps.meta.outputs.source_url }}
 
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: 🐍 Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pip"
 
       - name: 🔧 Install tools
         run: |
@@ -195,7 +201,7 @@ jobs:
 
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: 📥 Download formula artifact
         uses: actions/download-artifact@v4
@@ -210,7 +216,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             ~/.cargo/bin
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-v1
           restore-keys: |
             ${{ runner.os }}-cargo-
 
@@ -252,7 +258,6 @@ jobs:
           echo "✅ Cleanup complete"
 
       - name: 🚀 Commit and push
-        if: success()
         env:
           VERSION: ${{ needs.generate.outputs.version }}
         run: |
@@ -261,29 +266,48 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Check if there are actual changes
+          if git diff --quiet Formula/eeroctl.rb; then
+            echo "⚠️ No changes to formula - skipping commit"
+            exit 0
+          fi
+
+          # Pull latest changes to avoid conflicts
+          git pull --rebase origin master
+
           git add Formula/eeroctl.rb
           git commit -m "chore: update eeroctl to ${VERSION}"
-          git push
+          git push origin master
 
           echo "✅ Formula committed and pushed"
 
       - name: 📊 Summary
-        if: success()
+        if: always()
         env:
           VERSION: ${{ needs.generate.outputs.version }}
         run: |
-          echo "## 🍺 Homebrew Formula Updated" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "|:---------|:------|" >> $GITHUB_STEP_SUMMARY
-          echo "| 📦 Package | \`eeroctl\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🏷️ Version | \`${VERSION}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🔍 Syntax | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🧪 Installation | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🚀 Status | Merged to master |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📥 Installation" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "brew install fulviofreitas/eeroctl/eeroctl" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "## 🍺 Homebrew Formula Updated" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "|:---------|:------|" >> $GITHUB_STEP_SUMMARY
+            echo "| 📦 Package | \`eeroctl\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🏷️ Version | \`${VERSION}\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🔍 Syntax | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🧪 Installation | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🚀 Status | Merged to master |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📥 Installation" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+            echo "brew install fulviofreitas/eeroctl/eeroctl" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Homebrew Formula Update Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "|:---------|:------|" >> $GITHUB_STEP_SUMMARY
+            echo "| 📦 Package | \`eeroctl\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🏷️ Version | \`${VERSION}\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🚀 Status | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
