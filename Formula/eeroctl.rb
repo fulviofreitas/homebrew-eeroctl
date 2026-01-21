@@ -31,8 +31,8 @@ class Eeroctl < Formula
     # Install packages here, AFTER Homebrew's cleanup/linkage steps
     # This avoids the "Failed changing dylib ID" error for pydantic_core
     system libexec/"bin/python", "-m", "pip", "install",
-           "--quiet", "--disable-pip-version-check",
-           "eeroctl==#{version}"
+ "--quiet", "--disable-pip-version-check",
+ "eeroctl==#{version}"
   end
 
   test do
