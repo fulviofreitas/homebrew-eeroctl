@@ -11,10 +11,14 @@ class Eeroctl < Formula
   depends_on "python@3.12"
 
   def install
-    # Use pip to install from PyPI with binary wheels (no compilation needed)
-    # This is MUCH faster than virtualenv_install_with_resources
+    # Create virtualenv
     venv = virtualenv_create(libexec, "python3.12")
-    venv.pip_install "eeroctl==#{version}"
+
+    # Use pip directly to install with dependencies and binary wheels
+    # Homebrew's venv.pip_install adds --no-deps which skips dependencies
+    # We need dependencies (click, rich, etc.) so we call pip directly
+    system libexec/"bin/pip", "install", "eeroctl==#{version}"
+
     bin.install_symlink libexec/"bin/eero"
     bin.install_symlink libexec/"bin/eeroctl"
   end
