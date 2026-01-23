@@ -32,3 +32,13 @@ eero device list
 ## License
 
 MIT
+
+---
+
+<div align="center">
+
+## 📊 Repository Metrics
+
+![Repository Metrics](./metrics.repository.svg)
+
+</div>
