@@ -6,6 +6,8 @@
 
 [![Homebrew](https://img.shields.io/badge/homebrew-eeroctl-FBB040?style=for-the-badge&logo=homebrew&logoColor=white)](https://github.com/fulviofreitas/homebrew-eeroctl)
 [![License](https://img.shields.io/badge/license-MIT-22c55e?style=for-the-badge)](LICENSE)
+[![Metrics](https://github.com/fulviofreitas/homebrew-eeroctl/actions/workflows/metrics.yml/badge.svg?branch=master)](https://github.com/fulviofreitas/homebrew-eeroctl/actions/workflows/metrics.yml)
+[![Update Formula](https://github.com/fulviofreitas/homebrew-eeroctl/actions/workflows/update-formula.yml/badge.svg?branch=master)](https://github.com/fulviofreitas/homebrew-eeroctl/actions/workflows/update-formula.yml)
 
 ---
 
