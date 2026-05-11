@@ -1,0 +1,51 @@
+name: 🤖 Auto-Merge
+
+on:
+  pull_request_target:
+    types:
+      - labeled
+      - unlabeled
+      - synchronize
+      - opened
+      - edited
+      - ready_for_review
+      - reopened
+      - unlocked
+  pull_request_review:
+    types:
+      - submitted
+  check_suite:
+    types:
+      - completed
+  status:
+
+concurrency:
+  group: auto-merge-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    name: 🤖 Auto-Merge
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: >-
+      github.event_name != 'pull_request_review' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v6
+
+      - name: 🤖 Run automerge
+        uses: fulviofreitas/workflow-arsenal/.github/actions/auto-merge@master
+        with:
+          app-id: ${{ secrets.RENOVATE_APP_ID }}
+          app-private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+          merge-labels: "automerge"
+          blocking-labels: "wip,do-not-merge,needs-review"
+          merge-method: "squash"
+          required-approvals: "0"
