@@ -6,7 +6,6 @@
 
 [![Homebrew](https://img.shields.io/badge/homebrew-eeroctl-FBB040?logo=homebrew&logoColor=white)](https://github.com/fulviofreitas/homebrew-eeroctl)
 [![License](https://img.shields.io/badge/license-MIT-22c55e)](LICENSE)
-[![Metrics](https://github.com/fulviofreitas/homebrew-eeroctl/actions/workflows/metrics.yml/badge.svg?branch=master)](https://github.com/fulviofreitas/homebrew-eeroctl/actions/workflows/metrics.yml)
 [![Update Formula](https://github.com/fulviofreitas/homebrew-eeroctl/actions/workflows/update-formula.yml/badge.svg?branch=master)](https://github.com/fulviofreitas/homebrew-eeroctl/actions/workflows/update-formula.yml)
 
 ---
@@ -50,3 +49,13 @@ eero device list
 ## License
 
 MIT
+
+---
+
+<div align="center">
+
+## 📊 Repository Metrics
+
+![Repository Metrics](./metrics.repository.svg)
+
+</div>
