@@ -151,7 +151,7 @@ jobs:
           echo "✅ Syntax check passed"
 
       - name: 📤 Upload formula artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: formula
           path: Formula/eeroctl.rb
