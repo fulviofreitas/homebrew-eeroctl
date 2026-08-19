@@ -59,3 +59,7 @@ MIT
 ![Repository Metrics](./metrics.repository.svg)
 
 </div>
+
+## Graphify
+
+This repo is wired to auto-warm a [graphify](https://github.com/Graphify-Labs/graphify) knowledge graph on Claude Code `SessionStart`. Outputs land in local `graphify-out/` (git-ignored). Requires `pipx install "graphifyy[terraform]==0.9.46"` on the host.

@@ -1,2 +1,5 @@
 # Cursor IDE
 .cursor/
+
+# graphify knowledge-graph outputs (local artifacts, never commit)
+graphify-out/
