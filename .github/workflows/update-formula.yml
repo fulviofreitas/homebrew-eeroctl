@@ -178,6 +178,26 @@ jobs:
           name: formula
           path: Formula
 
+      # wait-for-pypi polls the JSON API, but post_install's pip reads the
+      # separately cached /simple/ index, which can lag behind it. Probe with
+      # pip itself so the install below sees the same index state.
+      - name: ⏳ Wait for pip to resolve the release
+        env:
+          VERSION: ${{ needs.generate.outputs.version }}
+        run: |
+          for i in $(seq 1 20); do
+            if python3 -m pip download --quiet --disable-pip-version-check \
+                --no-deps --no-cache-dir --dest "$RUNNER_TEMP/pip-probe" \
+                "eeroctl==${VERSION}"; then
+              echo "✅ pip resolves eeroctl==${VERSION}"
+              exit 0
+            fi
+            echo "⏳ Attempt $i/20: eeroctl==${VERSION} not on the simple index yet, retrying in 15s..."
+            sleep 15
+          done
+          echo "❌ pip could not resolve eeroctl==${VERSION} after 5 minutes"
+          exit 1
+
       - name: 🧪 Test installation
         env:
           VERSION: ${{ needs.generate.outputs.version }}
