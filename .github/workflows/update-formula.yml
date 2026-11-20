@@ -52,7 +52,7 @@ jobs:
           python-version: "3.12"
 
       - name: ⏳ Wait for PyPI availability
-        uses: fulviofreitas/workflow-arsenal/.github/actions/wait-for-pypi@c62cf10d0a378d6308b62a40677b3dabfc83808b # master
+        uses: fulviofreitas/workflow-arsenal/.github/actions/wait-for-pypi@2087aa01c13f842fc566101ceeb9a4a49ec2a370 # master
         with:
           package: eeroctl
           version: ${{ github.event.client_payload.version || github.event.inputs.version }}
