@@ -17,8 +17,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   metrics:
+    # reusable-metrics only reads with GITHUB_TOKEN; it commits the SVG with
+    # its own GitHub App token.
+    permissions:
+      contents: read
     uses: fulviofreitas/workflow-arsenal/.github/workflows/reusable-metrics.yml@c62cf10d0a378d6308b62a40677b3dabfc83808b # master
     with:
       repo: homebrew-eeroctl

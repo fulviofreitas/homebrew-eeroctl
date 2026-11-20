@@ -8,6 +8,9 @@ updates:
       time: "06:00"
       timezone: "UTC"
     open-pull-requests-limit: 5
+    # Let new releases age a week before proposing them (supply-chain safety).
+    cooldown:
+      default-days: 7
     groups:
       actions-minor:
         update-types:

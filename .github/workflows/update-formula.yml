@@ -16,9 +16,10 @@ on:
         description: "Version to update to (number only, e.g., 1.8.0, not v1.8.0)"
         required: true
 
+# Least privilege: the GITHUB_TOKEN only checks out code; the formula PR is
+# pushed and opened with the scoped GitHub App token in the test job.
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 # Prevent concurrent runs from conflicting
 concurrency:
@@ -42,6 +43,8 @@ jobs:
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: 🐍 Set up Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
@@ -237,6 +240,11 @@ jobs:
         with:
           client-id: ${{ secrets.RENOVATE_APP_ID }}
           private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+          # create-pull-request: push the bot branch (contents) and open +
+          # label the PR (pull-requests). Only Formula/ changes, so no
+          # `workflows` scope.
+          permission-contents: write
+          permission-pull-requests: write
 
       - name: 🚀 Open formula-update PR
         uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8
