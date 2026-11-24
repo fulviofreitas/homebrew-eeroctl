@@ -3,8 +3,8 @@ class Eeroctl < Formula
 
   desc "Command-line interface for managing Eero mesh Wi-Fi networks"
   homepage "https://github.com/fulviofreitas/eeroctl"
-  url "https://files.pythonhosted.org/packages/3c/3c/74d0227d8dd2570d6aab15214cabfda11549d585ec8bcd6cef7a1f5b9bc5/eeroctl-3.6.0.tar.gz"
-  sha256 "70dd96f19b7080de8f961297348b745f64996d404000b9a3bd90c2734a22be7e"
+  url "https://files.pythonhosted.org/packages/3f/4f/8d1d686805e76261d594ef072538765aeda4aece09a731bbe607a2d75483/eeroctl-3.6.1.tar.gz"
+  sha256 "1700ac7ddc471b7b88db1a2fc7d8c0072390aa1a5f65590e3bd282dd79028ab5"
   license "MIT"
   head "https://github.com/fulviofreitas/eeroctl.git", branch: "master"
 
